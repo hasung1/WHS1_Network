@@ -1,0 +1,58 @@
+#include <stdio.h>
+#include <pcap.h>
+#include <netinet/ip.h>
+#include <netinet/if_ether.h>
+
+void 패킷정보출력(const u_char *패킷) {
+    struct ether_header *이더넷헤더;
+    이더넷헤더 = (struct ether_header *) 패킷;
+
+    if (ntohs(이더넷헤더->ether_type) != ETHERTYPE_IP) {
+        printf("IP 패킷이 아닙니다. 건너뛸게요");
+        return;
+    }
+
+    printf("사용 가능한 전체 패킷: %d bytes
+", pcap_header->len);
+    printf("예상 패킷 크기: %d bytes
+", pcap_header->caplen);
+
+    struct ip *ip헤더;
+    ip헤더 = (struct ip *)(패킷 + ETHER_HDR_LEN);
+    char 출발지ip[INET_ADDRSTRLEN];
+    char 도착지ip[INET_ADDRSTRLEN];
+    inet_ntop(AF_INET, &(ip헤더->ip_src), 출발지ip, INET_ADDRSTRLEN);
+    inet_ntop(AF_INET, &(ip헤더->ip_dst), 도착지ip, INET_ADDRSTRLEN);
+
+    printf("출발지 ip: %s, 도착지 ip: %s
+", 출발지ip, 도착지ip);
+}
+
+int main(int argc, char *argv[]) {
+    char *장치;
+    char 에러버퍼[PCAP_ERRBUF_SIZE];
+    pcap_t *핸들;
+    const u_char *패킷;
+    struct pcap_pkthdr pcap헤더;
+
+    장치 = pcap_lookupdev(에러버퍼);
+    if (장치 == NULL) {
+        printf("장치 찾기 에러: %s
+", 에러버퍼);
+        return 1;
+    }
+
+    핸들 = pcap_open_live(장치, BUFSIZ, 1, 10000, 에러버퍼);
+    if (핸들 == NULL) {
+        fprintf(stderr, "장치를 열 수 없습니다 %s: %s
+", 장치, 에러버퍼);
+        return 2;
+    }
+
+    while (1) {
+        패킷 = pcap_next(핸들, &pcap헤더);
+        패킷정보출력(패킷);
+    }
+
+    return 0;
+}
