@@ -12,10 +12,8 @@ void 패킷정보출력(const u_char *패킷) {
         return;
     }
 
-    printf("사용 가능한 전체 패킷: %d bytes
-", pcap_header->len);
-    printf("예상 패킷 크기: %d bytes
-", pcap_header->caplen);
+    printf("사용 가능한 전체 패킷: %d bytes", pcap_header->len);
+    printf("예상 패킷 크기: %d bytes", pcap_header->caplen);
 
     struct ip *ip헤더;
     ip헤더 = (struct ip *)(패킷 + ETHER_HDR_LEN);
@@ -24,8 +22,7 @@ void 패킷정보출력(const u_char *패킷) {
     inet_ntop(AF_INET, &(ip헤더->ip_src), 출발지ip, INET_ADDRSTRLEN);
     inet_ntop(AF_INET, &(ip헤더->ip_dst), 도착지ip, INET_ADDRSTRLEN);
 
-    printf("출발지 ip: %s, 도착지 ip: %s
-", 출발지ip, 도착지ip);
+    printf("출발지 ip: %s, 도착지 ip: %s", 출발지ip, 도착지ip);
 }
 
 int main(int argc, char *argv[]) {
@@ -37,15 +34,13 @@ int main(int argc, char *argv[]) {
 
     장치 = pcap_lookupdev(에러버퍼);
     if (장치 == NULL) {
-        printf("장치 찾기 에러: %s
-", 에러버퍼);
+        printf("장치 찾기 에러: %s", 에러버퍼);
         return 1;
     }
 
     핸들 = pcap_open_live(장치, BUFSIZ, 1, 10000, 에러버퍼);
     if (핸들 == NULL) {
-        fprintf(stderr, "장치를 열 수 없습니다 %s: %s
-", 장치, 에러버퍼);
+        fprintf(stderr, "장치를 열 수 없습니다 %s: %s", 장치, 에러버퍼);
         return 2;
     }
 
